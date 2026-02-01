@@ -6,7 +6,7 @@ A production-quality Streamlit dashboard for monitoring AI system health, cost, 
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-from datetime import datetime
+from datetime import datetime, timezone
 import io
 
 # Page configuration
@@ -240,8 +240,20 @@ def create_metrics_dataframe(project_name, daily_users, api_calls, ram_gb, cpu_p
     """
     Create a dataframe for CSV export
     
+    Args:
+        project_name (str): Name of the AI project
+        daily_users (int): Number of daily active users
+        api_calls (int): Daily API calls count
+        ram_gb (float): RAM usage in GB
+        cpu_percent (int): CPU usage percentage
+        response_time_ms (int): Average response time in milliseconds
+        monthly_cost (float): Calculated monthly cost
+        performance_score (int): Performance score (0-100)
+        risk_level (str): Risk level assessment
+        system_health (str): System health status
+        
     Returns:
-        pandas.DataFrame
+        pandas.DataFrame: Formatted dataframe for export
     """
     data = {
         'Metric': [
@@ -268,7 +280,7 @@ def create_metrics_dataframe(project_name, daily_users, api_calls, ram_gb, cpu_p
             performance_score,
             risk_level,
             system_health,
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
         ]
     }
     
@@ -483,7 +495,7 @@ def main():
         st.download_button(
             label="📥 Download Report as CSV",
             data=csv_data,
-            file_name=f"ai_monitor_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+            file_name=f"ai_monitor_report_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.csv",
             mime="text/csv",
             use_container_width=True
         )
